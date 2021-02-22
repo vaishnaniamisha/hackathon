@@ -97,3 +97,10 @@ INSERT INTO public.users("Name") VALUES ('Amisha V');
 INSERT INTO public.users("Name") VALUES ('Peter P');
 
 INSERT INTO public.users("Name") VALUES ('Rajesh');
+
+
+INSERT INTO "Tags"("Tag") VALUES ('coder');
+
+INSERT INTO "Tags"("Tag") VALUES ('innovation');
+
+INSERT INTO "Tags"("Tag") VALUES ('programmer');

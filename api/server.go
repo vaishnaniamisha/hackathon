@@ -41,8 +41,10 @@ func (s *Server) registerAPIs() {
 			DbClient: _dbrepo,
 		},
 	}
+
 	group := s.router.Group("/v1")
-	group.GET("/ping", handler.Ping)
+	group.GET("/hackathon/ping", handler.Ping)
+	group.GET("/hackathon/tags", handler.GetTags)
 
 }
 
