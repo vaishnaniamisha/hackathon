@@ -22,3 +22,9 @@ func (m *MockRepo) DBConnect() error {
 	args := m.Mock.Called()
 	return args.Error(0)
 }
+
+//CreateChallenge mock
+func (m *MockRepo) CreateChallenge(challenge model.Challenge) error {
+	args := m.Mock.Called(challenge)
+	return args.Error(1)
+}

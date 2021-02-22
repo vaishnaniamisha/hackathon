@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"scripbox/hackathon/errors"
 	"scripbox/hackathon/lib/database"
+	"scripbox/hackathon/model"
 )
 
 //ChallengeService strucure
@@ -32,4 +33,9 @@ func (cs ChallengeService) GetChallengeTagList() ([]string, *errors.ServiceError
 		tags = append(tags, tag.Tag)
 	}
 	return tags, nil
+}
+
+//AddChallenge to
+func (cs ChallengeService) AddChallenge(challenge model.Challenge) *errors.ServiceError {
+	return nil
 }

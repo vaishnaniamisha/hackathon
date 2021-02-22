@@ -25,3 +25,8 @@ func (ch *ChallengeHandler) GetTags(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, tagList)
 }
+
+//CreateChallenge to add new challege
+func (ch *ChallengeHandler) CreateChallenge(c echo.Context) error {
+	return nil
+}

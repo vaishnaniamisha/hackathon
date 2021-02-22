@@ -6,4 +6,5 @@ import "scripbox/hackathon/model"
 type DBClientInterface interface {
 	DBConnect() error
 	TagList() ([]model.Tags, error)
+	CreateChallenge(model.Challenge) error
 }

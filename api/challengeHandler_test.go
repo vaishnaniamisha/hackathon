@@ -1,11 +1,14 @@
 package api_test
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"scripbox/hackathon/api"
 	"scripbox/hackathon/errors"
+	"scripbox/hackathon/model"
 	"scripbox/hackathon/service"
+	"strings"
 	"testing"
 
 	"github.com/labstack/echo"
@@ -54,6 +57,84 @@ func TestGetTagsError(t *testing.T) {
 	tagList := []string{"tag1", "tag2"}
 	mockChallengeService.On("GetChallengeTagList").Return(tagList, &errors.ServiceError{Code: http.StatusInternalServerError, ErrorMessage: "Internal Server Error"})
 	err := handler.GetTags(context)
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusInternalServerError, rec.Code)
+}
+
+func TestCreateChallenge(t *testing.T) {
+	tests := []struct {
+		name      string
+		body      model.Challenge
+		userID    string
+		want      string
+		resStatus int
+	}{
+		{"successTest", model.Challenge{
+			Title:       "Challenge 1",
+			Description: "Challenge 1 Description",
+			Tag:         "Tag 1",
+		}, "1001", "Success", http.StatusOK},
+		{"EmptyTitle", model.Challenge{
+			Title:       "",
+			Description: "Challenge 2 Description",
+			Tag:         "Tag 2",
+		}, "1001", `{"Code":400,"ErrorMessage":"Invalid Input: Please provide title"}`, http.StatusBadRequest},
+		{"EmptyDescription", model.Challenge{
+			Title:       "Challenge 2",
+			Description: "",
+			Tag:         "Tag 2",
+		}, "1001", `{"Code":400,"ErrorMessage":"Invalid Input: Please provide description"}`, http.StatusBadRequest},
+		{"InvalidTag", model.Challenge{
+			Title:       "Challenge 3",
+			Description: "Challenge 3 Description",
+			Tag:         "Dummy tag",
+		}, "1001", `{"Code":400,"ErrorMessage":"Invalid Input: Please provide valid tag"}`, http.StatusBadRequest},
+		{"EmptyUserId", model.Challenge{
+			Title:       "Challenge 3",
+			Description: "Challenge 3 Description",
+			Tag:         "test tag",
+		}, "", `{"Code":400,"ErrorMessage":"Invalid Input: UserId missing"}`, http.StatusBadRequest},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockChallengeService := new(service.MockChallengeService)
+			e := echo.New()
+			jsonbody, _ := json.Marshal(tt.body)
+			req := httptest.NewRequest(echo.POST, "/v1/hackathon/challenge", strings.NewReader(string(jsonbody)))
+			rec := httptest.NewRecorder()
+			req.Header.Add("UserID", tt.userID)
+			context := e.NewContext(req, rec)
+			handler := api.ChallengeHandler{
+				ChallengeService: mockChallengeService,
+			}
+			mockChallengeService.On("AddChallenge", tt.body).Return((*errors.ServiceError)(nil))
+			err := handler.CreateChallenge(context)
+			assert.Nil(t, err)
+			assert.Equal(t, tt.resStatus, rec.Code)
+			assert.Equal(t, tt.want, rec.Body.String())
+		})
+	}
+
+}
+
+func TestCreateChallengeError(t *testing.T) {
+	mockChallengeService := new(service.MockChallengeService)
+	challenge := model.Challenge{
+		Title:       "Challenge 1",
+		Description: "Challenge 1 Description",
+		Tag:         "Tag 1",
+	}
+	e := echo.New()
+	jsonbody, _ := json.Marshal(challenge)
+	req := httptest.NewRequest(echo.POST, "/v1/hackathon/challenge", strings.NewReader(string(jsonbody)))
+	rec := httptest.NewRecorder()
+	req.Header.Add("UserID", "1001")
+	context := e.NewContext(req, rec)
+	handler := api.ChallengeHandler{
+		ChallengeService: mockChallengeService,
+	}
+	mockChallengeService.On("AddChallenge", challenge).Return(&errors.ServiceError{Code: http.StatusInternalServerError, ErrorMessage: "Internal server error"})
+	err := handler.CreateChallenge(context)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusInternalServerError, rec.Code)
 }

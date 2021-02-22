@@ -31,3 +31,32 @@ func TestGetChallengeTagListError(t *testing.T) {
 	assert.NotNil(t, err)
 
 }
+
+func TestAddChallengeSuccess(t *testing.T) {
+	mockDBRepo := new(database.MockRepo)
+	challengeService := service.ChallengeService{
+		DbClient: mockDBRepo,
+	}
+	challenge := model.Challenge{
+		Title:       "Challenge 1",
+		Description: "Description 1",
+		Tag:         "tag1",
+	}
+	mockDBRepo.On("CreateChallenge", challenge).Return(nil)
+	err := challengeService.AddChallenge(challenge)
+	assert.Nil(t, err)
+}
+func TestAddChallengeError(t *testing.T) {
+	mockDBRepo := new(database.MockRepo)
+	challengeService := service.ChallengeService{
+		DbClient: mockDBRepo,
+	}
+	challenge := model.Challenge{
+		Title:       "Challenge 1",
+		Description: "Description 1",
+		Tag:         "tag1",
+	}
+	mockDBRepo.On("CreateChallenge", challenge).Return(errors.New("Db error"))
+	err := challengeService.AddChallenge(challenge)
+	assert.NotNil(t, err)
+}

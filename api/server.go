@@ -45,6 +45,7 @@ func (s *Server) registerAPIs() {
 	group := s.router.Group("/v1")
 	group.GET("/hackathon/ping", handler.Ping)
 	group.GET("/hackathon/tags", handler.GetTags)
+	group.POST("/hackathon/challengr", handler.CreateChallenge)
 
 }
 

@@ -8,3 +8,8 @@ func (dc *DBClient) TagList() ([]model.Tags, error) {
 	err := dc.GormDB.Debug().Find(&tags).Error
 	return tags, err
 }
+
+//CreateChallenge to create new challenge in db
+func (dc *DBClient) CreateChallenge(challenge model.Challenge) error {
+	return nil
+}
