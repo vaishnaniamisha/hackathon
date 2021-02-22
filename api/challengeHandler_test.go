@@ -74,6 +74,7 @@ func TestCreateChallenge(t *testing.T) {
 			Description: "Challenge 1 Description",
 			Tag:         "Tag 1",
 		}, "1001", "Success", http.StatusOK},
+		{"InvalidBody", model.Challenge{}, "1001", `{"Code":400,"ErrorMessage":"Invalid Input: Please provide valid input"}`, http.StatusBadRequest},
 		{"EmptyTitle", model.Challenge{
 			Title:       "",
 			Description: "Challenge 2 Description",
@@ -98,8 +99,11 @@ func TestCreateChallenge(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockChallengeService := new(service.MockChallengeService)
+			jsonbody := []byte{}
 			e := echo.New()
-			jsonbody, _ := json.Marshal(tt.body)
+			if tt.name != "InvalidBody" {
+				jsonbody, _ = json.Marshal(tt.body)
+			}
 			req := httptest.NewRequest(echo.POST, "/v1/hackathon/challenge", strings.NewReader(string(jsonbody)))
 			rec := httptest.NewRecorder()
 			req.Header.Add("UserID", tt.userID)
