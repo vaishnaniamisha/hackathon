@@ -19,6 +19,9 @@ func (ch *ChallengeHandler) Ping(c echo.Context) error {
 
 //GetTags to get list of tags
 func (ch *ChallengeHandler) GetTags(c echo.Context) error {
-
-	return nil
+	tagList, err := ch.ChallengeService.GetChallengeTagList()
+	if err != nil {
+		return c.JSON(err.Code, err)
+	}
+	return c.JSON(http.StatusOK, tagList)
 }

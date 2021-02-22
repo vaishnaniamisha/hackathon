@@ -1,7 +1,10 @@
 package database
 
-//TagList to get all tags
-func (dc *DBClient) TagList() ([]string, error) {
+import "scripbox/hackathon/model"
 
-	return []string{}, nil
+//TagList to get all tags
+func (dc *DBClient) TagList() ([]model.Tags, error) {
+	tags := []model.Tags{}
+	err := dc.GormDB.Debug().Find(&tags).Error
+	return tags, err
 }

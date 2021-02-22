@@ -1,6 +1,8 @@
 package service
 
 import (
+	"log"
+	"net/http"
 	"scripbox/hackathon/errors"
 	"scripbox/hackathon/lib/database"
 )
@@ -17,5 +19,17 @@ type ChallengeServiceInterface interface {
 
 //GetChallengeTagList to get list of tags
 func (cs ChallengeService) GetChallengeTagList() ([]string, *errors.ServiceError) {
-	return []string{}, nil
+	tags := []string{}
+	tagList, err := cs.DbClient.TagList()
+	if err != nil {
+		log.Println("Error Getting TagList :", err.Error())
+		return tags, &errors.ServiceError{
+			Code:         http.StatusInternalServerError,
+			ErrorMessage: "Internal Server Error",
+		}
+	}
+	for _, tag := range tagList {
+		tags = append(tags, tag.Tag)
+	}
+	return tags, nil
 }

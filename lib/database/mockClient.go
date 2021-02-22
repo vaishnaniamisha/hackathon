@@ -1,6 +1,10 @@
 package database
 
-import "github.com/stretchr/testify/mock"
+import (
+	"scripbox/hackathon/model"
+
+	"github.com/stretchr/testify/mock"
+)
 
 //MockRepo for UT
 type MockRepo struct {
@@ -8,9 +12,9 @@ type MockRepo struct {
 }
 
 //TagList mock
-func (m *MockRepo) TagList() ([]string, error) {
+func (m *MockRepo) TagList() ([]model.Tags, error) {
 	args := m.Mock.Called()
-	return args.Get(0).([]string), args.Error(1)
+	return args.Get(0).([]model.Tags), args.Error(1)
 }
 
 //DBConnect mock
