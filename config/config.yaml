@@ -1,0 +1,11 @@
+server:
+  port: "8070"
+  apipath: /
+  loglevel: debug
+
+database:
+  dbhost: "localhost"
+  dbname : "hackathon"
+  dbport: "5432"
+  dbusername : "postgres"
+  dbpassword: "admin123"
