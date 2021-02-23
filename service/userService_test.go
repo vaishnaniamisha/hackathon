@@ -7,6 +7,7 @@ import (
 	"scripbox/hackathon/service"
 	"testing"
 
+	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -36,6 +37,19 @@ func TestGetUserDetailsError(t *testing.T) {
 	}
 
 	mockDBRepo.On("GetUserDetails", userID).Return(model.User{}, errors.New("db error"))
+	_, err := userService.GetUserDetails(userID)
+	assert.NotNil(t, err)
+
+}
+func TestGetUserDetailsNodata(t *testing.T) {
+	userID := 1001
+
+	mockDBRepo := new(database.MockRepo)
+	userService := service.UserService{
+		DbClient: mockDBRepo,
+	}
+
+	mockDBRepo.On("GetUserDetails", userID).Return(model.User{}, gorm.ErrRecordNotFound)
 	_, err := userService.GetUserDetails(userID)
 	assert.NotNil(t, err)
 
