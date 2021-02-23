@@ -26,6 +26,7 @@ type ChallengeServiceInterface interface {
 	AddChallenge(challenge model.Challenge) *errors.ServiceError
 	GetChallengeDetails(challengeID int) (model.Challenge, *errors.ServiceError)
 	UpvoteChallenge(challenge model.Challenge) (model.Challenge, *errors.ServiceError)
+	ListAllChallenges(params map[string][]string) ([]model.Challenge, *errors.ServiceError)
 }
 
 //GetChallengeTagList to get list of tags
@@ -100,4 +101,9 @@ func (cs ChallengeService) UpvoteChallenge(challenge model.Challenge) (model.Cha
 		}
 	}
 	return challenge, nil
+}
+
+//ListAllChallenges to get all challenges
+func (cs ChallengeService) ListAllChallenges(params map[string][]string) ([]model.Challenge, *errors.ServiceError) {
+	return []model.Challenge{}, nil
 }

@@ -11,4 +11,5 @@ type DBClientInterface interface {
 	GetUserDetails(userID int) (model.User, error)
 	GetChallengeDetails(challengeID int) (model.Challenge, error)
 	UpdateChallenge(challenge model.Challenge) (model.Challenge, error)
+	GetAllChallenges(params map[string][]string) ([]model.Challenge, error)
 }

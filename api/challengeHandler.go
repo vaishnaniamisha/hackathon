@@ -90,6 +90,11 @@ func (ch *ChallengeHandler) UpvoteChallenge(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, challenge)
 }
+
+//GetAllChallenge handler to list all challneges
+func (ch ChallengeHandler) GetAllChallenge(c echo.Context) error {
+	return nil
+}
 func validateUserID(userID string) (int, *errors.ServiceError) {
 	if userID == "" {
 		return 0, &errors.ServiceError{

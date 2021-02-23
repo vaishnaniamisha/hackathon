@@ -52,3 +52,9 @@ func (m MockChallengeService) UpvoteChallenge(challenge model.Challenge) (model.
 	args := m.Mock.Called(challenge)
 	return args.Get(0).(model.Challenge), args.Get(1).(*errors.ServiceError)
 }
+
+//ListAllChallenges mock
+func (m *MockChallengeService) ListAllChallenges(params map[string][]string) ([]model.Challenge, *errors.ServiceError) {
+	args := m.Mock.Called(params)
+	return args.Get(0).([]model.Challenge), args.Get(1).(*errors.ServiceError)
+}

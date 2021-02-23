@@ -52,3 +52,9 @@ func (m *MockRepo) UpdateChallenge(challenge model.Challenge) (model.Challenge, 
 	args := m.Mock.Called(challenge)
 	return args.Get(0).(model.Challenge), args.Error(1)
 }
+
+//GetAllChallenges mock
+func (m *MockRepo) GetAllChallenges(params map[string][]string) ([]model.Challenge, error) {
+	args := m.Mock.Called(params)
+	return args.Get(0).([]model.Challenge), args.Error(1)
+}
