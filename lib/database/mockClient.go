@@ -26,5 +26,11 @@ func (m *MockRepo) DBConnect() error {
 //CreateChallenge mock
 func (m *MockRepo) CreateChallenge(challenge model.Challenge) error {
 	args := m.Mock.Called(challenge)
-	return args.Error(1)
+	return args.Error(0)
+}
+
+//TagExist mock
+func (m *MockRepo) TagExist(tag string) bool {
+	args := m.Mock.Called(tag)
+	return args.Bool(0)
 }

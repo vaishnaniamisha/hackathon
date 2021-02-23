@@ -60,3 +60,22 @@ func TestAddChallengeError(t *testing.T) {
 	err := challengeService.AddChallenge(challenge)
 	assert.NotNil(t, err)
 }
+
+func TestValidateTagSuccess(t *testing.T) {
+	mockDBRepo := new(database.MockRepo)
+	challengeService := service.ChallengeService{
+		DbClient: mockDBRepo,
+	}
+	mockDBRepo.On("TagExist", "tag").Return(true)
+	err := challengeService.ValidateTag("tag")
+	assert.Nil(t, err)
+}
+func TestValidateTagError(t *testing.T) {
+	mockDBRepo := new(database.MockRepo)
+	challengeService := service.ChallengeService{
+		DbClient: mockDBRepo,
+	}
+	mockDBRepo.On("TagExist", "tag").Return(false)
+	err := challengeService.ValidateTag("tag")
+	assert.NotNil(t, err)
+}

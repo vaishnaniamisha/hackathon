@@ -73,6 +73,7 @@ func TestCreateChallenge(t *testing.T) {
 			Title:       "Challenge 1",
 			Description: "Challenge 1 Description",
 			Tag:         "Tag 1",
+			CreatedBy:   1001,
 		}, "1001", `"Success"`, http.StatusOK},
 		{"InvalidBody", model.Challenge{},
 			"1001", `{"Code":400,"ErrorMessage":"Invalid Input: Please provide valid input"}`, http.StatusBadRequest},
@@ -142,6 +143,7 @@ func TestCreateChallengeError(t *testing.T) {
 		Title:       "Challenge 1",
 		Description: "Challenge 1 Description",
 		Tag:         "Tag 1",
+		CreatedBy:   1001,
 	}
 	e := echo.New()
 	jsonbody, _ := json.Marshal(challenge)
@@ -152,6 +154,7 @@ func TestCreateChallengeError(t *testing.T) {
 	handler := api.ChallengeHandler{
 		ChallengeService: mockChallengeService,
 	}
+	mockChallengeService.On("ValidateTag", challenge.Tag).Return((*errors.ServiceError)(nil))
 	mockChallengeService.On("AddChallenge", challenge).Return(&errors.ServiceError{Code: http.StatusInternalServerError, ErrorMessage: "Internal server error"})
 	err := handler.CreateChallenge(context)
 	assert.Nil(t, err)

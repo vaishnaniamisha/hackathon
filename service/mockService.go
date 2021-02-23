@@ -23,3 +23,9 @@ func (m MockChallengeService) AddChallenge(challenge model.Challenge) *errors.Se
 	args := m.Mock.Called(challenge)
 	return args.Get(0).(*errors.ServiceError)
 }
+
+//ValidateTag mock
+func (m MockChallengeService) ValidateTag(tag string) *errors.ServiceError {
+	args := m.Mock.Called(tag)
+	return args.Get(0).(*errors.ServiceError)
+}
