@@ -14,14 +14,14 @@ func (tags Tags) TableName() string {
 
 //Challenge structure for Challenge table
 type Challenge struct {
-	ID          int        `gorm:"column:ID;primary_key;AUTO_INCREMENT" json:"id"`
-	Title       string     `gorm:"column:Title" json:"title"`
-	Description string     `gorm:"column:Description" json:"description"`
-	Tag         string     `gorm:"column:Tag" json:"tag"`
-	VoteCount   int        `gorm:"column:VoteCount" json:"voteCount"`
-	CreatedBy   int        `gorm:"column:CreatedBy"`
-	CreatedDate *time.Time `gorm:"column:CreatedDate"`
-	IsDeleted   bool       `gorm:"column:IsDeleted"`
+	ID          int       `gorm:"column:ID;primary_key;AUTO_INCREMENT" json:"id"`
+	Title       string    `gorm:"column:Title" json:"title"`
+	Description string    `gorm:"column:Description" json:"description"`
+	Tag         string    `gorm:"column:Tag" json:"tag"`
+	VoteCount   int       `gorm:"column:VoteCount" json:"voteCount"`
+	CreatedBy   int       `gorm:"column:CreatedBy"`
+	CreatedDate time.Time `gorm:"column:CreatedDate"`
+	IsDeleted   bool      `gorm:"column:IsDeleted"`
 }
 
 //TableName Challenge
