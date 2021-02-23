@@ -8,4 +8,5 @@ type DBClientInterface interface {
 	TagList() ([]model.Tags, error)
 	CreateChallenge(model.Challenge) error
 	TagExist(string) bool
+	UserDetails(userID int) (model.User, error)
 }

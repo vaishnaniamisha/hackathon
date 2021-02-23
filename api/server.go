@@ -36,16 +36,21 @@ func (s *Server) registerAPIs() {
 	if err != nil {
 		log.Fatal("Error Initializing Db instance")
 	}
-	handler := ChallengeHandler{
+	challenge := ChallengeHandler{
 		ChallengeService: service.ChallengeService{
 			DbClient: _dbrepo,
 		},
 	}
-
+	user := UserHandler{
+		UserService: &service.UserService{
+			DbClient: _dbrepo,
+		},
+	}
 	group := s.router.Group("/v1")
-	group.GET("/hackathon/ping", handler.Ping)
-	group.GET("/hackathon/tags", handler.GetTags)
-	group.POST("/hackathon/challenge", handler.CreateChallenge)
+	group.GET("/hackathon/ping", challenge.Ping)
+	group.GET("/hackathon/tags", challenge.GetTags)
+	group.POST("/hackathon/challenge", challenge.CreateChallenge)
+	group.GET("/hackathon/user/{userID}", user.GetUserDetails)
 
 }
 
