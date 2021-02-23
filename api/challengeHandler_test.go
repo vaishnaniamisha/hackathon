@@ -73,8 +73,9 @@ func TestCreateChallenge(t *testing.T) {
 			Title:       "Challenge 1",
 			Description: "Challenge 1 Description",
 			Tag:         "Tag 1",
-		}, "1001", "Success", http.StatusOK},
-		{"InvalidBody", model.Challenge{}, "1001", `{"Code":400,"ErrorMessage":"Invalid Input: Please provide valid input"}`, http.StatusBadRequest},
+		}, "1001", `"Success"`, http.StatusOK},
+		{"InvalidBody", model.Challenge{},
+			"1001", `{"Code":400,"ErrorMessage":"Invalid Input: Please provide valid input"}`, http.StatusBadRequest},
 		{"EmptyTitle", model.Challenge{
 			Title:       "",
 			Description: "Challenge 2 Description",
@@ -95,6 +96,11 @@ func TestCreateChallenge(t *testing.T) {
 			Description: "Challenge 3 Description",
 			Tag:         "test tag",
 		}, "", `{"Code":400,"ErrorMessage":"Invalid Input: UserId missing"}`, http.StatusBadRequest},
+		{"InvalidUserId", model.Challenge{
+			Title:       "Challenge 3",
+			Description: "Challenge 3 Description",
+			Tag:         "test tag",
+		}, "abc", `{"Code":400,"ErrorMessage":"Invalid Input: UserId is not valid"}`, http.StatusBadRequest},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -111,11 +117,20 @@ func TestCreateChallenge(t *testing.T) {
 			handler := api.ChallengeHandler{
 				ChallengeService: mockChallengeService,
 			}
+			if tt.name == "InvalidTag" {
+				mockChallengeService.On("ValidateTag", tt.body.Tag).Return(&errors.ServiceError{
+					Code:         http.StatusBadRequest,
+					ErrorMessage: "Invalid Input: Please provide valid tag",
+				})
+			} else {
+				mockChallengeService.On("ValidateTag", tt.body.Tag).Return((*errors.ServiceError)(nil))
+			}
 			mockChallengeService.On("AddChallenge", tt.body).Return((*errors.ServiceError)(nil))
 			err := handler.CreateChallenge(context)
 			assert.Nil(t, err)
 			assert.Equal(t, tt.resStatus, rec.Code)
-			assert.Equal(t, tt.want, rec.Body.String())
+			resStr := rec.Body.String()
+			assert.Equal(t, tt.want, resStr[:len(resStr)-1])
 		})
 	}
 
