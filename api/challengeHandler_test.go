@@ -310,7 +310,8 @@ func TestCollabrateChallenge(t *testing.T) {
 			mockChallengeService := new(service.MockChallengeService)
 			e := echo.New()
 
-			req := httptest.NewRequest(echo.PUT, "/v1/hackathon/collabration?userID="+strconv.Itoa(tt.userID)+"&challengeID="+strconv.Itoa(tt.userID), nil)
+			req := httptest.NewRequest(echo.PUT, "/v1/hackathon/collabration?challengeID="+strconv.Itoa(tt.challengeID), nil)
+			req.Header.Add("userID", strconv.Itoa(tt.userID))
 			rec := httptest.NewRecorder()
 			context := e.NewContext(req, rec)
 			handler := api.ChallengeHandler{
