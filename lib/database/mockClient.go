@@ -58,3 +58,9 @@ func (m *MockRepo) GetAllChallenges(params map[string][]string) ([]model.Challen
 	args := m.Mock.Called(params)
 	return args.Get(0).([]model.Challenge), args.Error(1)
 }
+
+//CreateChallengeCollabration mock
+func (m *MockRepo) CreateChallengeCollabration(collabration model.ChallengeCollabration) error {
+	args := m.Mock.Called(collabration)
+	return args.Error(0)
+}

@@ -70,3 +70,8 @@ func (dc *DBClient) GetAllChallenges(params map[string][]string) ([]model.Challe
 	err := query.Find(&challenges).Error
 	return challenges, err
 }
+
+//CreateChallengeCollabration to add collabration
+func (dc *DBClient) CreateChallengeCollabration(collabration model.ChallengeCollabration) error {
+	return nil
+}

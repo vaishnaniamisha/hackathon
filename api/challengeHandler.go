@@ -92,6 +92,11 @@ func (ch *ChallengeHandler) UpvoteChallenge(c echo.Context) error {
 	return c.JSON(http.StatusOK, challenge)
 }
 
+//CollabrateChallenge handler to add challenge collabration
+func (ch ChallengeHandler) CollabrateChallenge(c echo.Context) error {
+	return nil
+}
+
 //GetAllChallenge handler to list all challneges
 func (ch ChallengeHandler) GetAllChallenge(c echo.Context) error {
 	params := c.QueryParams()
@@ -120,6 +125,7 @@ func validateUserID(userID string) (int, *errors.ServiceError) {
 	}
 	return userIDint, nil
 }
+
 func validtaeChallengeID(challengeIDStr string) (int, *errors.ServiceError) {
 	if challengeIDStr == "" {
 		return 0, &errors.ServiceError{
@@ -136,6 +142,7 @@ func validtaeChallengeID(challengeIDStr string) (int, *errors.ServiceError) {
 	}
 	return challengeID, nil
 }
+
 func (ch *ChallengeHandler) validateChallenge(challenge model.Challenge) *errors.ServiceError {
 	if challenge.Title == "" {
 		return &errors.ServiceError{

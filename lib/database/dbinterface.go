@@ -12,4 +12,5 @@ type DBClientInterface interface {
 	GetChallengeDetails(challengeID int) (model.Challenge, error)
 	UpdateChallenge(challenge model.Challenge) (model.Challenge, error)
 	GetAllChallenges(params map[string][]string) ([]model.Challenge, error)
+	CreateChallengeCollabration(collabration model.ChallengeCollabration) error
 }

@@ -58,3 +58,8 @@ func (m MockChallengeService) ListAllChallenges(params map[string][]string) ([]m
 	args := m.Mock.Called(params)
 	return args.Get(0).([]model.Challenge), args.Get(1).(*errors.ServiceError)
 }
+
+func (m MockChallengeService) UpdateCollabration(userID int, challengeID int) *errors.ServiceError {
+	args := m.Mock.Called(userID, challengeID)
+	return args.Get(0).(*errors.ServiceError)
+}
