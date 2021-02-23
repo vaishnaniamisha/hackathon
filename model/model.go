@@ -31,9 +31,8 @@ func (challenge Challenge) TableName() string {
 
 //User structure to store user table
 type User struct {
-	ID          int    `gorm:"column:ID;primary_key;AUTO_INCREMENT" json:"employeeId"`
-	Name        string `gorm:"column:Name" json:"EmployeeName"`
-	IsValidUser bool   `json:"isValidUser"`
+	ID   int    `gorm:"column:ID;primary_key;AUTO_INCREMENT" json:"employeeId"`
+	Name string `gorm:"column:Name" json:"EmployeeName"`
 }
 
 //TableName for User

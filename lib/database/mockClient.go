@@ -36,7 +36,7 @@ func (m *MockRepo) TagExist(tag string) bool {
 }
 
 //UserDetails mock
-func (m *MockRepo) UserDetails(userID int) (model.User, error) {
+func (m *MockRepo) GetUserDetails(userID int) (model.User, error) {
 	args := m.Mock.Called(userID)
 	return args.Get(0).(model.User), args.Error(1)
 }
