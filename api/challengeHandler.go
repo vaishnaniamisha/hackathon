@@ -94,6 +94,20 @@ func (ch *ChallengeHandler) UpvoteChallenge(c echo.Context) error {
 
 //CollabrateChallenge handler to add challenge collabration
 func (ch ChallengeHandler) CollabrateChallenge(c echo.Context) error {
+	userIDParam := c.Request().Header.Get("UserID")
+	userID, err := validateUserID(userIDParam)
+	if err != nil {
+		return c.JSON(err.Code, err)
+	}
+	challegeIDParam := c.QueryParam("challengeID")
+	challengeID, err := validtaeChallengeID(challegeIDParam)
+	if err != nil {
+		return c.JSON(err.Code, err)
+	}
+	err = ch.ChallengeService.UpdateCollabration(userID, challengeID)
+	if err != nil {
+		return c.JSON(err.Code, err)
+	}
 	return c.JSON(http.StatusOK, "Success")
 }
 

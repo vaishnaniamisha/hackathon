@@ -130,3 +130,22 @@ func TestListAllChallenges(t *testing.T) {
 	_, err := client.GetAllChallenges(params)
 	assert.Nil(t, err)
 }
+
+func TestCreateChallengeCollabration(t *testing.T) {
+	db, mock := SetupSqlTestDb(t)
+	defer db.Close()
+	client := &database.DBClient{}
+	client.GormDB = db
+	userId := 1001
+	challengeID := 1002
+	collabration := model.ChallengeCollabration{
+		UserID:      userId,
+		ChallengeID: challengeID,
+	}
+	query := `SELECT * FROM "ChallengeCollabration"  WHERE ("UserId" = $1 and "ChallengeId" = $2) ORDER BY "ChallengeCollabration"."ID" ASC LIMIT 1`
+	mock.ExpectQuery(regexp.QuoteMeta(query)).
+		WithArgs(userId, challengeID).
+		WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow(1001))
+	err := client.CreateChallengeCollabration(collabration)
+	assert.Nil(t, err)
+}

@@ -311,7 +311,7 @@ func TestCollabrateChallenge(t *testing.T) {
 			e := echo.New()
 
 			req := httptest.NewRequest(echo.PUT, "/v1/hackathon/collabration?challengeID="+strconv.Itoa(tt.challengeID), nil)
-			req.Header.Add("userID", strconv.Itoa(tt.userID))
+			req.Header.Add("UserID", strconv.Itoa(tt.userID))
 			rec := httptest.NewRecorder()
 			context := e.NewContext(req, rec)
 			handler := api.ChallengeHandler{

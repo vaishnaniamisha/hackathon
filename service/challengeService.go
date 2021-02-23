@@ -120,5 +120,17 @@ func (cs ChallengeService) ListAllChallenges(params map[string][]string) ([]mode
 
 //UpdateCollabration to add collabration
 func (cs ChallengeService) UpdateCollabration(userID int, challengeID int) *errors.ServiceError {
+	collabration := model.ChallengeCollabration{
+		UserID:      userID,
+		ChallengeID: challengeID,
+	}
+	err := cs.DbClient.CreateChallengeCollabration(collabration)
+	if err != nil {
+		log.Println("Error creating collabration:", err.Error())
+		return &errors.ServiceError{
+			Code:         http.StatusInternalServerError,
+			ErrorMessage: internalServerErr,
+		}
+	}
 	return nil
 }

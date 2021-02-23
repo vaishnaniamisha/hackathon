@@ -73,5 +73,6 @@ func (dc *DBClient) GetAllChallenges(params map[string][]string) ([]model.Challe
 
 //CreateChallengeCollabration to add collabration
 func (dc *DBClient) CreateChallengeCollabration(collabration model.ChallengeCollabration) error {
-	return nil
+	err := dc.GormDB.Debug().Where(`"UserId" = ? and "ChallengeId" = ?`, collabration.UserID, collabration.ChallengeID).FirstOrCreate(&collabration).Error
+	return err
 }

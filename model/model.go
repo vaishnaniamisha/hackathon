@@ -43,8 +43,8 @@ func (user User) TableName() string {
 //ChallengeCollabration struct
 type ChallengeCollabration struct {
 	ID          int `gorm:"column:ID;primary_key;AUTO_INCREMENT" json:"id"`
-	ChallengeID int `gorm:"column:ChallengeID" json:"challengeId"`
-	UserID      int `gorm:"UserID" json:"userId"`
+	ChallengeID int `gorm:"column:ChallengeId" json:"challengeId"`
+	UserID      int `gorm:"column:UserId" json:"userId"`
 }
 
 //TableName for ChallengeCollabration
