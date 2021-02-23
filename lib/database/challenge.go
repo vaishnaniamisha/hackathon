@@ -2,6 +2,7 @@ package database
 
 import (
 	"scripbox/hackathon/model"
+	"strings"
 	"time"
 )
 
@@ -37,4 +38,35 @@ func (dc *DBClient) GetChallengeDetails(challengeID int) (model.Challenge, error
 func (dc *DBClient) UpdateChallenge(challenge model.Challenge) (model.Challenge, error) {
 	err := dc.GormDB.Debug().Save(&challenge).Error
 	return challenge, err
+}
+
+//GetAllChallenges to list all challneges
+func (dc *DBClient) GetAllChallenges(params map[string][]string) ([]model.Challenge, error) {
+	query := dc.GormDB.Debug()
+	challenges := []model.Challenge{}
+	if sortParam, ok := params["sortby"]; ok {
+		var sortbyArr []string
+		for _, sort := range sortParam {
+			sortArr := strings.Split(sort, " ")
+			orderParam := sortArr[0]
+			order := "asc"
+			if len(sortArr) <= 0 {
+				continue
+			}
+			if len(sortArr) >= 2 && strings.EqualFold(sortArr[1], "descending") {
+				order = "desc"
+			}
+			switch strings.ToLower(orderParam) {
+			case "votecount":
+				sortbyArr = append(sortbyArr, `"VoteCount" `+order)
+			case "createddate":
+				sortbyArr = append(sortbyArr, `"CreatedDate" `+order)
+			}
+
+		}
+		sortBy := strings.Join(sortbyArr, ",")
+		query = query.Order(sortBy)
+	}
+	err := query.Find(&challenges).Error
+	return challenges, err
 }

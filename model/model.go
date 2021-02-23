@@ -20,7 +20,7 @@ type Challenge struct {
 	Tag         string    `gorm:"column:Tag" json:"tag"`
 	VoteCount   int       `gorm:"column:VoteCount" json:"voteCount"`
 	CreatedBy   int       `gorm:"column:CreatedBy"`
-	CreatedDate time.Time `gorm:"column:CreatedDate"`
+	CreatedDate time.Time `gorm:"column:CreatedDate" json:"createdDate"`
 	IsDeleted   bool      `gorm:"column:IsDeleted"`
 }
 

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"scripbox/hackathon/errors"
 	"scripbox/hackathon/model"
@@ -93,8 +94,16 @@ func (ch *ChallengeHandler) UpvoteChallenge(c echo.Context) error {
 
 //GetAllChallenge handler to list all challneges
 func (ch ChallengeHandler) GetAllChallenge(c echo.Context) error {
-	return nil
+	params := c.QueryParams()
+	fmt.Println(params)
+	fmt.Println("--", c.QueryParams().Get("sortby"))
+	challenges, err := ch.ChallengeService.ListAllChallenges(params)
+	if err != nil {
+		c.JSON(err.Code, err)
+	}
+	return c.JSON(http.StatusOK, challenges)
 }
+
 func validateUserID(userID string) (int, *errors.ServiceError) {
 	if userID == "" {
 		return 0, &errors.ServiceError{

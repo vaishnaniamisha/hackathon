@@ -95,6 +95,7 @@ func (cs ChallengeService) UpvoteChallenge(challenge model.Challenge) (model.Cha
 	challenge.VoteCount = challenge.VoteCount + 1
 	challenge, err := cs.DbClient.UpdateChallenge(challenge)
 	if err != nil {
+		log.Println("Error updating Votes:", err.Error())
 		return challenge, &errors.ServiceError{
 			Code:         http.StatusInternalServerError,
 			ErrorMessage: internalServerErr,
@@ -105,5 +106,13 @@ func (cs ChallengeService) UpvoteChallenge(challenge model.Challenge) (model.Cha
 
 //ListAllChallenges to get all challenges
 func (cs ChallengeService) ListAllChallenges(params map[string][]string) ([]model.Challenge, *errors.ServiceError) {
-	return []model.Challenge{}, nil
+	challenges, err := cs.DbClient.GetAllChallenges(params)
+	if err != nil {
+		log.Println("Error getting all challenges:", err.Error())
+		return challenges, &errors.ServiceError{
+			Code:         http.StatusInternalServerError,
+			ErrorMessage: internalServerErr,
+		}
+	}
+	return challenges, nil
 }
