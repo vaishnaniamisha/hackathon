@@ -153,3 +153,26 @@ func TestUpvoteChallengeError(t *testing.T) {
 	assert.NotNil(t, err)
 
 }
+
+func TestListAllChallenges(t *testing.T) {
+	mockDBRepo := new(database.MockRepo)
+	challengeService := service.ChallengeService{
+		DbClient: mockDBRepo,
+	}
+	params := make(map[string][]string)
+	params["sortby"] = []string{"votecount asending", "createddate descending"}
+	mockDBRepo.On("GetAllChallenges", params).Return([]model.Challenge{}, nil)
+	_, err := challengeService.ListAllChallenges(params)
+	assert.Nil(t, err)
+}
+func TestListAllChallengesError(t *testing.T) {
+	mockDBRepo := new(database.MockRepo)
+	challengeService := service.ChallengeService{
+		DbClient: mockDBRepo,
+	}
+	params := make(map[string][]string)
+	params["sortby"] = []string{"votecount asending", "createddate descending"}
+	mockDBRepo.On("GetAllChallenges", params).Return([]model.Challenge{}, errors.New("db Err"))
+	_, err := challengeService.ListAllChallenges(params)
+	assert.NotNil(t, err)
+}

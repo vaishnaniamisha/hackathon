@@ -213,3 +213,80 @@ func TestUpvoteChallenge(t *testing.T) {
 		})
 	}
 }
+
+func TestGetAllChallenge(t *testing.T) {
+	challenges := []model.Challenge{
+		{
+			ID:          1001,
+			CreatedBy:   1001,
+			VoteCount:   2,
+			Title:       "Challenge 1",
+			Description: "Challenge 1 Description",
+		},
+		{
+			ID:          1002,
+			CreatedBy:   1001,
+			VoteCount:   0,
+			Title:       "Challenge 2",
+			Description: "Challenge 2 Description",
+		},
+	}
+	challengeJSON, _ := json.Marshal(challenges)
+	tests := []struct {
+		name           string
+		expectedResult string
+		challenges     []model.Challenge
+		params         string
+		resStatus      int
+	}{
+		{
+			"Success", string(challengeJSON), challenges, "voteCount", http.StatusOK,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockChallengeService := new(service.MockChallengeService)
+			e := echo.New()
+
+			req := httptest.NewRequest(echo.GET, "/v1/hackathon/challenge?sortby="+tt.params, nil)
+			rec := httptest.NewRecorder()
+			context := e.NewContext(req, rec)
+			handler := api.ChallengeHandler{
+				ChallengeService: mockChallengeService,
+			}
+			params := make(map[string][]string)
+			params["sortby"] = []string{tt.params}
+
+			mockChallengeService.On("ListAllChallenges", params).Return(tt.challenges, (*errors.ServiceError)(nil))
+
+			err := handler.GetAllChallenge(context)
+			assert.Nil(t, err)
+			assert.Equal(t, tt.resStatus, rec.Code)
+			resStr := rec.Body.String()
+			assert.Equal(t, tt.expectedResult, resStr[:len(resStr)-1])
+		})
+	}
+}
+
+func TestGetAllChallengeError(t *testing.T) {
+	mockChallengeService := new(service.MockChallengeService)
+	e := echo.New()
+
+	req := httptest.NewRequest(echo.GET, "/v1/hackathon/challenge", nil)
+	rec := httptest.NewRecorder()
+	context := e.NewContext(req, rec)
+	handler := api.ChallengeHandler{
+		ChallengeService: mockChallengeService,
+	}
+	params := make(map[string][]string)
+
+	mockChallengeService.On("ListAllChallenges", params).Return([]model.Challenge{}, &errors.ServiceError{
+		Code:         http.StatusInternalServerError,
+		ErrorMessage: "Internal server error",
+	})
+
+	err := handler.GetAllChallenge(context)
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusInternalServerError, rec.Code)
+
+}

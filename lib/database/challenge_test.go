@@ -117,3 +117,16 @@ func TestUpdateChallenge(t *testing.T) {
 	_, err := client.UpdateChallenge(challenge)
 	assert.NotNil(t, err)
 }
+
+func TestListAllChallenges(t *testing.T) {
+	db, mock := SetupSqlTestDb(t)
+	defer db.Close()
+	client := &database.DBClient{}
+	client.GormDB = db
+	params := make(map[string][]string)
+	params["sortby"] = []string{"votecount asending", "createddate descending"}
+	query := `SELECT * FROM "Challenges"   ORDER BY "VoteCount" asc,"CreatedDate" desc`
+	mock.ExpectQuery(regexp.QuoteMeta(query)).WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow(1001))
+	_, err := client.GetAllChallenges(params)
+	assert.Nil(t, err)
+}
