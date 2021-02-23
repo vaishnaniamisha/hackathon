@@ -35,8 +35,20 @@ func (m *MockRepo) TagExist(tag string) bool {
 	return args.Bool(0)
 }
 
-//UserDetails mock
+//GetUserDetails mock
 func (m *MockRepo) GetUserDetails(userID int) (model.User, error) {
 	args := m.Mock.Called(userID)
 	return args.Get(0).(model.User), args.Error(1)
+}
+
+//GetChallengeDetails mock
+func (m *MockRepo) GetChallengeDetails(challengeID int) (model.Challenge, error) {
+	args := m.Mock.Called(challengeID)
+	return args.Get(0).(model.Challenge), args.Error(1)
+}
+
+//UpdateChallenge mock
+func (m *MockRepo) UpdateChallenge(challenge model.Challenge) (model.Challenge, error) {
+	args := m.Mock.Called(challenge)
+	return args.Get(0).(model.Challenge), args.Error(1)
 }

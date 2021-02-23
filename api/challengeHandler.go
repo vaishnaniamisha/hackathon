@@ -61,6 +61,35 @@ func (ch *ChallengeHandler) CreateChallenge(c echo.Context) error {
 	return c.JSON(http.StatusOK, "Success")
 }
 
+//UpvoteChallenge to vote
+func (ch *ChallengeHandler) UpvoteChallenge(c echo.Context) error {
+	userIDParam := c.Request().Header.Get("UserID")
+	userID, err := validateUserID(userIDParam)
+	if err != nil {
+		return c.JSON(err.Code, err)
+	}
+
+	challengeIDParam := c.QueryParam("challengeID")
+	challengeID, err := validtaeChallengeID(challengeIDParam)
+	if err != nil {
+		return c.JSON(err.Code, err)
+	}
+
+	challenge, err := ch.ChallengeService.GetChallengeDetails(challengeID)
+	if err != nil {
+		return c.JSON(err.Code, err)
+	}
+	err = validateVote(userID, challenge)
+	if err != nil {
+		return c.JSON(err.Code, err)
+	}
+	challenge, err = ch.ChallengeService.UpvoteChallenge(challenge)
+	if err != nil {
+		return c.JSON(err.Code, err)
+	}
+
+	return c.JSON(http.StatusOK, challenge)
+}
 func validateUserID(userID string) (int, *errors.ServiceError) {
 	if userID == "" {
 		return 0, &errors.ServiceError{
@@ -77,7 +106,22 @@ func validateUserID(userID string) (int, *errors.ServiceError) {
 	}
 	return userIDint, nil
 }
-
+func validtaeChallengeID(challengeIDStr string) (int, *errors.ServiceError) {
+	if challengeIDStr == "" {
+		return 0, &errors.ServiceError{
+			Code:         http.StatusBadRequest,
+			ErrorMessage: "Invalid Input: ChallengeID missing",
+		}
+	}
+	challengeID, err := strconv.Atoi(challengeIDStr)
+	if err != nil {
+		return 0, &errors.ServiceError{
+			Code:         http.StatusBadRequest,
+			ErrorMessage: "Invalid Input: ChallengeID is not valid",
+		}
+	}
+	return challengeID, nil
+}
 func (ch *ChallengeHandler) validateChallenge(challenge model.Challenge) *errors.ServiceError {
 	if challenge.Title == "" {
 		return &errors.ServiceError{
@@ -94,5 +138,16 @@ func (ch *ChallengeHandler) validateChallenge(challenge model.Challenge) *errors
 	if challenge.Tag != "" {
 		return ch.ChallengeService.ValidateTag(challenge.Tag)
 	}
+	return nil
+}
+
+func validateVote(userID int, challenge model.Challenge) *errors.ServiceError {
+	if challenge.CreatedBy == userID {
+		return &errors.ServiceError{
+			Code:         http.StatusBadRequest,
+			ErrorMessage: "Invalid Input: Creator can't upvote challenege",
+		}
+	}
+
 	return nil
 }

@@ -6,6 +6,8 @@ import (
 	"scripbox/hackathon/errors"
 	"scripbox/hackathon/lib/database"
 	"scripbox/hackathon/model"
+
+	"github.com/jinzhu/gorm"
 )
 
 //ChallengeService strucure
@@ -22,6 +24,8 @@ type ChallengeServiceInterface interface {
 	GetChallengeTagList() ([]string, *errors.ServiceError)
 	ValidateTag(tag string) *errors.ServiceError
 	AddChallenge(challenge model.Challenge) *errors.ServiceError
+	GetChallengeDetails(challengeID int) (model.Challenge, *errors.ServiceError)
+	UpvoteChallenge(challenge model.Challenge) (model.Challenge, *errors.ServiceError)
 }
 
 //GetChallengeTagList to get list of tags
@@ -64,4 +68,36 @@ func (cs ChallengeService) ValidateTag(tag string) *errors.ServiceError {
 		}
 	}
 	return nil
+}
+
+//GetChallengeDetails to get challenge
+func (cs ChallengeService) GetChallengeDetails(challengeID int) (model.Challenge, *errors.ServiceError) {
+	challenge, err := cs.DbClient.GetChallengeDetails(challengeID)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return challenge, &errors.ServiceError{
+				Code:         http.StatusNotFound,
+				ErrorMessage: "Challenge does not exist",
+			}
+		}
+		log.Println("Error getting Challenge:", err.Error())
+		return challenge, &errors.ServiceError{
+			Code:         http.StatusInternalServerError,
+			ErrorMessage: internalServerErr,
+		}
+	}
+	return challenge, nil
+}
+
+//UpvoteChallenge to upvote challenge
+func (cs ChallengeService) UpvoteChallenge(challenge model.Challenge) (model.Challenge, *errors.ServiceError) {
+	challenge.VoteCount = challenge.VoteCount + 1
+	challenge, err := cs.DbClient.UpdateChallenge(challenge)
+	if err != nil {
+		return challenge, &errors.ServiceError{
+			Code:         http.StatusInternalServerError,
+			ErrorMessage: internalServerErr,
+		}
+	}
+	return challenge, nil
 }

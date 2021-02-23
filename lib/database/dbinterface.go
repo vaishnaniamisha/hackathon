@@ -9,4 +9,6 @@ type DBClientInterface interface {
 	CreateChallenge(model.Challenge) error
 	TagExist(string) bool
 	GetUserDetails(userID int) (model.User, error)
+	GetChallengeDetails(challengeID int) (model.Challenge, error)
+	UpdateChallenge(challenge model.Challenge) (model.Challenge, error)
 }

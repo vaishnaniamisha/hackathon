@@ -79,3 +79,77 @@ func TestValidateTagError(t *testing.T) {
 	err := challengeService.ValidateTag("tag")
 	assert.NotNil(t, err)
 }
+
+func TestGetChallengeDetails(t *testing.T) {
+	mockDBRepo := new(database.MockRepo)
+	challengeService := service.ChallengeService{
+		DbClient: mockDBRepo,
+	}
+	challenge := model.Challenge{
+		ID:          1001,
+		Title:       "Challenge 1",
+		Description: "Description 1",
+		Tag:         "tag1",
+	}
+	mockDBRepo.On("GetChallengeDetails", challenge.ID).Return(challenge, nil)
+	res, err := challengeService.GetChallengeDetails(challenge.ID)
+	assert.Nil(t, err)
+	assert.Equal(t, challenge, res)
+}
+func TestGetChallengeDetailsError(t *testing.T) {
+	mockDBRepo := new(database.MockRepo)
+	challengeService := service.ChallengeService{
+		DbClient: mockDBRepo,
+	}
+	challengeID := 1001
+	mockDBRepo.On("GetChallengeDetails", challengeID).Return(model.Challenge{}, errors.New("db  error"))
+	_, err := challengeService.GetChallengeDetails(challengeID)
+	assert.NotNil(t, err)
+}
+
+func TestUpvoteChallenge(t *testing.T) {
+	mockDBRepo := new(database.MockRepo)
+	challengeService := service.ChallengeService{
+		DbClient: mockDBRepo,
+	}
+	challenge := model.Challenge{
+		ID:          1001,
+		Title:       "Challenge 1",
+		Description: "Description 1",
+		Tag:         "tag1",
+	}
+	expectedResult := model.Challenge{
+		ID:          1001,
+		Title:       "Challenge 1",
+		Description: "Description 1",
+		Tag:         "tag1",
+		VoteCount:   1,
+	}
+	mockDBRepo.On("UpdateChallenge", expectedResult).Return(expectedResult, nil)
+	res, err := challengeService.UpvoteChallenge(challenge)
+	assert.Nil(t, err)
+	assert.Equal(t, expectedResult, res)
+}
+func TestUpvoteChallengeError(t *testing.T) {
+	mockDBRepo := new(database.MockRepo)
+	challengeService := service.ChallengeService{
+		DbClient: mockDBRepo,
+	}
+	challenge := model.Challenge{
+		ID:          1001,
+		Title:       "Challenge 1",
+		Description: "Description 1",
+		Tag:         "tag1",
+	}
+	expectedResult := model.Challenge{
+		ID:          1001,
+		Title:       "Challenge 1",
+		Description: "Description 1",
+		Tag:         "tag1",
+		VoteCount:   1,
+	}
+	mockDBRepo.On("UpdateChallenge", expectedResult).Return(expectedResult, errors.New("db error"))
+	_, err := challengeService.UpvoteChallenge(challenge)
+	assert.NotNil(t, err)
+
+}

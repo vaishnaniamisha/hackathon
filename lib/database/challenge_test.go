@@ -2,6 +2,7 @@ package database_test
 
 import (
 	"database/sql/driver"
+	"errors"
 	"regexp"
 	"scripbox/hackathon/lib/database"
 	"scripbox/hackathon/model"
@@ -71,4 +72,48 @@ func TestCreateChallenge(t *testing.T) {
 	mock.ExpectCommit()
 	err := client.CreateChallenge(challenge)
 	assert.Nil(t, err)
+}
+
+func TestGetChallengeDetails(t *testing.T) {
+	db, mock := SetupSqlTestDb(t)
+	defer db.Close()
+	client := &database.DBClient{}
+	client.GormDB = db
+	challengeID := 1001
+	challenge := model.Challenge{
+		ID:        1001,
+		Title:     "Challenge 1",
+		VoteCount: 0,
+		CreatedBy: 1001,
+	}
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "Challenges"  WHERE ("ID" = $1)`)).
+		WithArgs(challengeID).
+		WillReturnRows(sqlmock.NewRows([]string{"ID", "CreatedBy", "Title", "VoteCount"}).AddRow(challengeID, challenge.CreatedBy, challenge.Title, challenge.VoteCount))
+
+	res, err := client.GetChallengeDetails(challengeID)
+	assert.Nil(t, err)
+	assert.Equal(t, challenge, res)
+}
+
+func TestUpdateChallenge(t *testing.T) {
+	db, mock := SetupSqlTestDb(t)
+	defer db.Close()
+	client := &database.DBClient{}
+	client.GormDB = db
+	challengeID := 1001
+	challenge := model.Challenge{
+		ID:        1001,
+		Title:     "Challenge 1",
+		VoteCount: 0,
+		Tag:       "tag",
+		CreatedBy: 1001,
+	}
+	mock.ExpectBegin()
+	mock.ExpectExec(regexp.QuoteMeta(`UPDATE "Challenges" SET "Title" = $1, "Description" = $2, "Tag" = $3, "VoteCount" = $4, "CreatedBy" = $5, "CreatedDate" = $6, "IsDeleted" = $7  WHERE "Challenges"."ID" = $8`)).
+		WithArgs(challenge.Title, challenge.Description, challenge.Tag, challenge.VoteCount, challenge.CreatedBy, challenge.CreatedDate, challenge.IsDeleted, challengeID).
+		WillReturnError(errors.New("some error"))
+	mock.ExpectCommit()
+	_, err := client.UpdateChallenge(challenge)
+	assert.NotNil(t, err)
 }

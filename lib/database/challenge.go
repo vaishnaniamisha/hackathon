@@ -25,3 +25,16 @@ func (dc *DBClient) TagExist(tag string) bool {
 	rows := dc.GormDB.Exec(query, tag).RowsAffected
 	return rows > 0
 }
+
+//GetChallengeDetails query
+func (dc *DBClient) GetChallengeDetails(challengeID int) (model.Challenge, error) {
+	challenge := model.Challenge{}
+	err := dc.GormDB.Debug().Where(`"ID" = ?`, challengeID).Find(&challenge).Error
+	return challenge, err
+}
+
+//UpdateChallenge to update challenge details
+func (dc *DBClient) UpdateChallenge(challenge model.Challenge) (model.Challenge, error) {
+	err := dc.GormDB.Debug().Save(&challenge).Error
+	return challenge, err
+}

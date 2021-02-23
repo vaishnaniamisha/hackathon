@@ -40,3 +40,15 @@ func (m MockUserService) GetUserDetails(userID int) (model.User, *errors.Service
 	args := m.Mock.Called(userID)
 	return args.Get(0).(model.User), args.Get(1).(*errors.ServiceError)
 }
+
+//GetChallengeDetails mock
+func (m MockChallengeService) GetChallengeDetails(challengeID int) (model.Challenge, *errors.ServiceError) {
+	args := m.Mock.Called(challengeID)
+	return args.Get(0).(model.Challenge), args.Get(1).(*errors.ServiceError)
+}
+
+//UpvoteChallenge mock
+func (m MockChallengeService) UpvoteChallenge(challenge model.Challenge) (model.Challenge, *errors.ServiceError) {
+	args := m.Mock.Called(challenge)
+	return args.Get(0).(model.Challenge), args.Get(1).(*errors.ServiceError)
+}
