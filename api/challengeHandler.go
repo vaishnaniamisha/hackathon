@@ -94,7 +94,7 @@ func (ch *ChallengeHandler) UpvoteChallenge(c echo.Context) error {
 
 //CollabrateChallenge handler to add challenge collabration
 func (ch ChallengeHandler) CollabrateChallenge(c echo.Context) error {
-	return nil
+	return c.JSON(http.StatusOK, "Success")
 }
 
 //GetAllChallenge handler to list all challneges

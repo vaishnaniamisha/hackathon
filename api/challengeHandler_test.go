@@ -271,7 +271,6 @@ func TestGetAllChallenge(t *testing.T) {
 func TestGetAllChallengeError(t *testing.T) {
 	mockChallengeService := new(service.MockChallengeService)
 	e := echo.New()
-
 	req := httptest.NewRequest(echo.GET, "/v1/hackathon/challenge", nil)
 	rec := httptest.NewRecorder()
 	context := e.NewContext(req, rec)
@@ -289,4 +288,50 @@ func TestGetAllChallengeError(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusInternalServerError, rec.Code)
 
+}
+
+func TestCollabrateChallenge(t *testing.T) {
+	tests := []struct {
+		name           string
+		expectedResult string
+		userID         int
+		challengeID    int
+		resStatus      int
+	}{
+		{
+			"Success", `"Success"`, 1001, 1002, http.StatusOK,
+		},
+		{
+			"ServerError", `{"Code":500,"ErrorMessage":"Internal server error"}`, 1001, 1002, http.StatusInternalServerError,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockChallengeService := new(service.MockChallengeService)
+			e := echo.New()
+
+			req := httptest.NewRequest(echo.PUT, "/v1/hackathon/collabration?userID="+strconv.Itoa(tt.userID)+"&challengeID="+strconv.Itoa(tt.userID), nil)
+			rec := httptest.NewRecorder()
+			context := e.NewContext(req, rec)
+			handler := api.ChallengeHandler{
+				ChallengeService: mockChallengeService,
+			}
+			if tt.name == "ServerError" {
+				mockChallengeService.On("UpdateCollabration", tt.userID, tt.challengeID).Return(&errors.ServiceError{
+					Code:         http.StatusInternalServerError,
+					ErrorMessage: "Internal server error",
+				})
+
+			} else {
+				mockChallengeService.On("UpdateCollabration", tt.userID, tt.challengeID).Return((*errors.ServiceError)(nil))
+
+			}
+
+			err := handler.CollabrateChallenge(context)
+			assert.Nil(t, err)
+			assert.Equal(t, tt.resStatus, rec.Code)
+			resStr := rec.Body.String()
+			assert.Equal(t, tt.expectedResult, resStr[:len(resStr)-1])
+		})
+	}
 }

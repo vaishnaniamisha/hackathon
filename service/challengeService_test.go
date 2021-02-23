@@ -176,3 +176,34 @@ func TestListAllChallengesError(t *testing.T) {
 	_, err := challengeService.ListAllChallenges(params)
 	assert.NotNil(t, err)
 }
+
+func TestUpdateCollabration(t *testing.T) {
+	mockDBRepo := new(database.MockRepo)
+	challengeService := service.ChallengeService{
+		DbClient: mockDBRepo,
+	}
+	userID := 1001
+	challengeID := 1001
+	collabration := model.ChallengeCollabration{
+		UserID:      userID,
+		ChallengeID: challengeID,
+	}
+	mockDBRepo.On("CreateChallengeCollabration", collabration).Return(nil)
+	err := challengeService.UpdateCollabration(userID, challengeID)
+	assert.Nil(t, err)
+}
+func TestUpdateCollabrationError(t *testing.T) {
+	mockDBRepo := new(database.MockRepo)
+	challengeService := service.ChallengeService{
+		DbClient: mockDBRepo,
+	}
+	userID := 1001
+	challengeID := 1001
+	collabration := model.ChallengeCollabration{
+		UserID:      userID,
+		ChallengeID: challengeID,
+	}
+	mockDBRepo.On("CreateChallengeCollabration", collabration).Return(errors.New("db error"))
+	err := challengeService.UpdateCollabration(userID, challengeID)
+	assert.NotNil(t, err)
+}

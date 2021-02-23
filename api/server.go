@@ -53,7 +53,7 @@ func (s *Server) registerAPIs() {
 	group.PUT("/hackathon/vote", challenge.UpvoteChallenge)
 	group.GET("/hackathon/challenge", challenge.GetAllChallenge)
 	group.GET("/hackathon/user", user.GetUserDetails)
-	group.POST("/hackathon/collabration", challenge.CollabrateChallenge)
+	group.PUT("/hackathon/collabration", challenge.CollabrateChallenge)
 }
 
 //Start to start server
