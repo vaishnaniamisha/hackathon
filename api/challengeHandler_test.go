@@ -8,6 +8,7 @@ import (
 	"scripbox/hackathon/errors"
 	"scripbox/hackathon/model"
 	"scripbox/hackathon/service"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -159,4 +160,56 @@ func TestCreateChallengeError(t *testing.T) {
 	err := handler.CreateChallenge(context)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusInternalServerError, rec.Code)
+}
+
+func TestUpvoteChallenge(t *testing.T) {
+	challenge := model.Challenge{
+		ID:          1001,
+		CreatedBy:   1001,
+		VoteCount:   0,
+		Title:       "Challenge 1",
+		Description: "Challenge 1 Description",
+	}
+	result := challenge
+	result.VoteCount = result.VoteCount + 1
+	challengeJSON, _ := json.Marshal(result)
+	tests := []struct {
+		name            string
+		userID          int
+		challengeID     int
+		challenge       model.Challenge
+		resultChallenge model.Challenge
+		want            string
+		resStatus       int
+	}{
+		{
+			"Success", 1002, 1001, challenge, result, string(challengeJSON), http.StatusOK,
+		},
+		{
+			"InvalidUser", 1001, 1001, challenge, result, `{"Code":400,"ErrorMessage":"Invalid Input: Creator can't upvote challenege"}`, http.StatusBadRequest,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockChallengeService := new(service.MockChallengeService)
+			e := echo.New()
+
+			req := httptest.NewRequest(echo.PUT, "/v1/hackathon/vote?challengeID="+strconv.Itoa(tt.challengeID), nil)
+			rec := httptest.NewRecorder()
+			req.Header.Add("UserID", strconv.Itoa(tt.userID))
+
+			context := e.NewContext(req, rec)
+			handler := api.ChallengeHandler{
+				ChallengeService: mockChallengeService,
+			}
+			mockChallengeService.On("GetChallengeDetails", tt.challengeID).Return(tt.challenge, (*errors.ServiceError)(nil))
+			mockChallengeService.On("UpvoteChallenge", tt.challenge).Return(tt.resultChallenge, (*errors.ServiceError)(nil))
+
+			err := handler.UpvoteChallenge(context)
+			assert.Nil(t, err)
+			assert.Equal(t, tt.resStatus, rec.Code)
+			resStr := rec.Body.String()
+			assert.Equal(t, tt.want, resStr[:len(resStr)-1])
+		})
+	}
 }

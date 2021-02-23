@@ -50,6 +50,7 @@ func (s *Server) registerAPIs() {
 	group.GET("/hackathon/ping", challenge.Ping)
 	group.GET("/hackathon/tags", challenge.GetTags)
 	group.POST("/hackathon/challenge", challenge.CreateChallenge)
+	group.PUT("/hackathon/vote", challenge.UpvoteChallenge)
 	group.GET("/hackathon/user", user.GetUserDetails)
 
 }
