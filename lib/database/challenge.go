@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"scripbox/hackathon/model"
 	"strings"
 	"time"
@@ -42,8 +43,25 @@ func (dc *DBClient) UpdateChallenge(challenge model.Challenge) (model.Challenge,
 
 //GetAllChallenges to list all challneges
 func (dc *DBClient) GetAllChallenges(params map[string][]string) ([]model.Challenge, error) {
+	sql := `select ch."ID" As "ChallengeID" ,ch."Title",ch."Description",ch."Tag",ch."VoteCount",ch."CreatedBy",ch."CreatedDate",ch."IsDeleted","users"."Name" as "UserName","users"."ID" As "UserID"
+	from "Challenges" ch LEFT JOIN "ChallengeCollabration" ON ch."ID" = "ChallengeCollabration"."ChallengeId"
+		LEFT JOIN "users" ON "ChallengeCollabration"."UserId" = "users"."ID"`
 	query := dc.GormDB.Debug()
 	challenges := []model.Challenge{}
+	type challengeDb struct {
+		ChallengeID int       `gorm:"column:ChallengeID"`
+		Title       string    `gorm:"column:Title"`
+		Description string    `gorm:"column:Description"`
+		Tag         string    `gorm:"column:Tag"`
+		VoteCount   int       `gorm:"column:VoteCount"`
+		CreatedBy   int       `gorm:"column:CreatedBy"`
+		CreatedDate time.Time `gorm:"column:CreatedDate"`
+		IsDeleted   bool      `gorm:"column:IsDeleted"`
+		UserID      int       `gorm:"column:UserID"`
+		UserName    string    `gorm:"column:UserName"`
+	}
+	challengesDb := []challengeDb{}
+
 	if sortParam, ok := params["sortby"]; ok {
 		var sortbyArr []string
 		for _, sort := range sortParam {
@@ -65,9 +83,50 @@ func (dc *DBClient) GetAllChallenges(params map[string][]string) ([]model.Challe
 
 		}
 		sortBy := strings.Join(sortbyArr, ",")
-		query = query.Order(sortBy)
+		if sortBy != "" {
+			sql = sql + " ORDER BY " + sortBy
+		}
+		// query = query.Order(sortBy)
 	}
-	err := query.Find(&challenges).Error
+	err := query.Raw(sql).Scan(&challengesDb).Error
+	fmt.Println("challengesDb", len(challengesDb))
+	fmt.Println("challengesDb", challengesDb)
+
+	challengMap := make(map[int]model.Challenge)
+	for _, c := range challengesDb {
+
+		if obj, found := challengMap[c.ChallengeID]; found {
+			if c.UserID != 0 {
+				user := model.User{}
+				user.ID = c.UserID
+				user.Name = c.UserName
+				obj.Collabrators = append(obj.Collabrators, user)
+			}
+			challengMap[c.ChallengeID] = obj
+		} else {
+			challenge := model.Challenge{}
+			challenge.ID = c.ChallengeID
+			challenge.Title = c.Title
+			challenge.Description = c.Description
+			challenge.Tag = c.Tag
+			challenge.CreatedBy = c.CreatedBy
+			challenge.CreatedDate = c.CreatedDate
+			challenge.VoteCount = c.VoteCount
+			challenge.IsDeleted = c.IsDeleted
+			if c.UserID != 0 {
+				user := model.User{}
+				user.ID = c.UserID
+				user.Name = c.UserName
+				challenge.Collabrators = append(challenge.Collabrators, user)
+			}
+			challengMap[c.ChallengeID] = challenge
+		}
+
+	}
+	fmt.Println("Map -- ", challengMap)
+	for _, challenge := range challengMap {
+		challenges = append(challenges, challenge)
+	}
 	return challenges, err
 }
 

@@ -125,7 +125,9 @@ func TestListAllChallenges(t *testing.T) {
 	client.GormDB = db
 	params := make(map[string][]string)
 	params["sortby"] = []string{"votecount asending", "createddate descending"}
-	query := `SELECT * FROM "Challenges"   ORDER BY "VoteCount" asc,"CreatedDate" desc`
+	query := `select ch."ID",ch."Title",ch."Description",ch."Tag",ch."VoteCount",ch."CreatedBy",ch."CreatedDate",ch."IsDeleted","users"."Name" as "UserName","users"."ID" As "UserID"
+	from "Challenges" ch LEFT JOIN "ChallengeCollabration" ON ch."ID" = "ChallengeCollabration"."ChallengeId"
+		LEFT JOIN "users" ON "ChallengeCollabration"."UserId" = "users"."ID" ORDER BY "VoteCount" asc,"CreatedDate" desc`
 	mock.ExpectQuery(regexp.QuoteMeta(query)).WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow(1001))
 	_, err := client.GetAllChallenges(params)
 	assert.Nil(t, err)

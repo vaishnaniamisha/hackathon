@@ -26,6 +26,10 @@ func NewServer(cfg *config.ServerConfiguration) *Server {
 	server.router.Use(middleware.Recover())
 	server.router.Use(middleware.CORS())
 
+	server.router.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"*"},
+	}))
 	server.registerAPIs()
 	return server
 }
