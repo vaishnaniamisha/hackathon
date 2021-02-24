@@ -4,7 +4,7 @@ server:
   loglevel: debug
 
 database:
-  dbhost: "localhost"
+  dbhost:  "docker.for.mac.localhost" 
   dbname : "hackathon"
   dbport: "5432"
   dbusername : "postgres"
