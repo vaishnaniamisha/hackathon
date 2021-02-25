@@ -24,7 +24,7 @@ type Challenge struct {
 	CreatedBy    int       `gorm:"column:CreatedBy"`
 	CreatedDate  time.Time `gorm:"column:CreatedDate" json:"createdDate"`
 	IsDeleted    bool      `gorm:"column:IsDeleted"`
-	Collabrators []User    `gorm:"-" json:"collabrators"`
+	Collabrators []string  `gorm:"-" json:"collabrators"`
 }
 
 //TableName Challenge

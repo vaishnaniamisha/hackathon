@@ -96,11 +96,9 @@ func (dc *DBClient) GetAllChallenges(params map[string][]string) ([]model.Challe
 	for _, c := range challengesDb {
 
 		if obj, found := challengMap[c.ChallengeID]; found {
-			if c.UserID != 0 {
-				user := model.User{}
-				user.ID = c.UserID
-				user.Name = c.UserName
-				obj.Collabrators = append(obj.Collabrators, user)
+			if c.UserName != "" {
+
+				obj.Collabrators = append(obj.Collabrators, c.UserName)
 			}
 			challengMap[c.ChallengeID] = obj
 		} else {
@@ -113,11 +111,9 @@ func (dc *DBClient) GetAllChallenges(params map[string][]string) ([]model.Challe
 			challenge.CreatedDate = c.CreatedDate
 			challenge.VoteCount = c.VoteCount
 			challenge.IsDeleted = c.IsDeleted
-			if c.UserID != 0 {
-				user := model.User{}
-				user.ID = c.UserID
-				user.Name = c.UserName
-				challenge.Collabrators = append(challenge.Collabrators, user)
+			if c.UserName != "" {
+
+				challenge.Collabrators = append(challenge.Collabrators, c.UserName)
 			}
 			challengMap[c.ChallengeID] = challenge
 		}

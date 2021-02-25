@@ -1,10 +1,10 @@
 server:
-  port: "8070"
+  port: "8080"
   apipath: /
   loglevel: debug
 
 database:
-  dbhost:  "docker.for.mac.localhost" 
+  dbhost:  "docker.for.mac.localhost"  # set "docker.for.mac.localhost"  while using docker and "localhost" running without docker
   dbname : "hackathon"
   dbport: "5432"
   dbusername : "postgres"
