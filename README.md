@@ -11,5 +11,5 @@ Steps to Run Application
 2. Build docker image using below command
      docker build -t hackathon .
 3. Run container using below command
-    docker run -p 8070:8070 "hackathon"
+    docker run -p 8080:8080 "hackathon"
 
